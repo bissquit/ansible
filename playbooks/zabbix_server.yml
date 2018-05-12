@@ -1,0 +1,7 @@
+---
+- name: Zabbix server installation
+  hosts: all
+  become: yes
+  become_method: su
+  roles:
+    - zabbix_server

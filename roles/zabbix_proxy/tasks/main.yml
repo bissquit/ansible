@@ -1,0 +1,44 @@
+---
+- name: Check if DB with name zabbix is used
+  shell: grep -w "[[:space:]]*DBName=zabbix" /etc/zabbix/zabbix_proxy.conf
+  register: dbexist
+  failed_when: dbexist.rc == 2
+
+- name: Copy sql schema file
+  copy:
+    src: schema.sql
+    dest: /tmp/schema.sql
+    mode: 0644
+  when: dbexist.rc == 1
+
+- name: Create DB zabbix
+  mysql_db:
+    collation: utf8_bin
+    encoding: utf8
+    login_user: "{{ mysqluser }}"
+    login_password: "{{ mysqlpassword }}"
+    name: zabbix
+    state: import
+    target: /tmp/schema.sql
+  when: dbexist.rc == 1
+
+- name: Create MySQL user and grant priveleges
+  mysql_user:
+    login_user: "{{ mysqluser }}"
+    login_password: "{{ mysqlpassword }}"
+    name: zabbix
+    priv: 'zabbix.*:ALL'
+  when: dbexist.rc == 1
+
+- name: Copy Zabbix Proxy config
+  template:
+    src: "zabbix_proxy_01.conf.j2"
+    dest: "/etc/zabbix/zabbix_proxy.conf"
+    backup: yes
+    force: yes
+    mode: 0640
+    owner: root
+    group: zabbix
+  tags: conf
+  notify:
+  - enable zabbix proxy

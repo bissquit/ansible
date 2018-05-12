@@ -1,0 +1,15 @@
+---
+zbxs_package_url: "http://repo.zabbix.com/zabbix/3.4/debian/pool/main/z/zabbix/zabbix-server-mysql_3.4.8-1%2Bstretch_amd64.deb"
+# destination file name
+zbxs_package_dest_name: "zbxs.deb"
+# default zabbix sql schema path. Do not change
+zbxs_mysql_schema_path: "/usr/share/doc/zabbix-server-mysql"
+# password for zabbix database from mysql-server
+zbxs_mysql_zabbixdb_password: "tototo"
+# sql files names
+zbxs_mysql_sql_file: create.sql
+#  - 'schema.sql'
+#  - 'images.sql'
+#  - 'data.sql'
+# zabbix server official repo
+zbxs_repo_path: http://repo.zabbix.com/zabbix/3.4/debian/pool/main/z/zabbix-release/zabbix-release_3.4-1+stretch_all.deb

@@ -1,0 +1,7 @@
+---
+- name: Common tasks for new servers
+  hosts: all
+  become: yes
+  become_method: su
+  roles:
+    - common
