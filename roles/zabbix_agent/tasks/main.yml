@@ -9,17 +9,6 @@
     name: 'zabbix-agent'
     update_cache: yes
 
-#- name: Check if Zabbix Server is installed
-#  shell: dpkg -s zabbix-server-mysql | grep "Status\. install ok installed"
-#  register: zbxs_installed
-#  failed_when: zbxs_installed.rc == 2
-
-#- name: Redefine variable if Zabbix Server is installed
-#  vars:
-#    zbxa_hostname: 'Zabbix server'
-#    zbxa_server_address: '127.0.0.1'
-#  when: zbxs_installed.rc == 1
-
 - name: Copy Zabbix Agent config
   template:
     src: "zabbix_agentd_01.conf.j2"
