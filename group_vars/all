@@ -1,3 +1,13 @@
 ---
-# MySQL root password
+#
+# MySQL
+#
+# root password
 mysql_root_password: "tratata"
+
+#
+# Zabbix Agent
+#
+# define variable below before running playbook
+zbxa_server_address: 192.168.1.14
+zbxa_hostname: "{{ inventory_hostname }}"

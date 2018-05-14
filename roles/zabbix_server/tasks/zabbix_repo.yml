@@ -1,0 +1,4 @@
+---
+- name: Get Zabbix repo
+  apt:
+    deb: "{{ zbxs_repo_path }}"

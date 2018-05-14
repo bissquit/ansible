@@ -1,0 +1,7 @@
+---
+- name: Zabbix Agent installation
+  hosts: all
+  become: yes
+  become_method: su
+  roles:
+    - zabbix_agent

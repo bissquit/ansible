@@ -1,4 +1,9 @@
 ---
+- name: Zabbix Agent installation
+  include_role:
+    name: zabbix_agent
+    tasks_from: main.yml
+
 - name: MySQL installation
   include_role:
     name: mysql-server
@@ -12,9 +17,10 @@
     owner: root
     group: root
 
-- name: Get Zabbix repo
-  apt:
-    deb: "{{ zbxs_repo_path }}"
+- name: Get repo
+  include_role:
+    name: zabbix_server
+    tasks_from: zabbix_repo.yml
 
 - name: Packages installation
   apt:
@@ -30,6 +36,9 @@
   register: dbexist
   failed_when: dbexist.rc == 2
 
+#
+# The tasks below will not be executed if Zabbix Server is already installed
+#
 - name: Unzip sql schema file
   shell: gunzip "{{ zbxs_mysql_schema_path }}/{{ zbxs_mysql_sql_file }}.gz"
   when: dbexist.rc == 1
@@ -55,8 +64,11 @@
     password: "{{ zbxs_mysql_zabbixdb_password }}"
     priv: 'zabbix.*:ALL'
   when: dbexist.rc == 1
+#
+#
+#
 
-# if you want to delete file with mysql root credentials from server uncomment this section
+# if you want to delete file with mysql root credentials from server uncomment section below
 #- name: Delete .my.cnf
 #  file:
 #    path: "/root/.my.cnf"
