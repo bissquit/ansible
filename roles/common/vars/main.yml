@@ -1,0 +1,6 @@
+---
+# iptables chains list
+iptables_chains_list:
+  - 'INPUT'
+  - 'OUTPUT'
+  - 'FORWARD'

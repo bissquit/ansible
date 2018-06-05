@@ -3,11 +3,15 @@
   include_role:
     name: zabbix_server
     tasks_from: zabbix_repo.yml
+  tags: 
+    - zbxa_install
 
 - name: Packages installation
   apt:
     name: 'zabbix-agent'
     update_cache: yes
+  tags:
+    - zbxa_install
 
 - name: Copy Zabbix Agent config
   template:
@@ -17,3 +21,19 @@
     mode: 0644
   notify:
     - zabbix agent restart
+  tags:
+    - zbxa_install
+
+#- name: Iostat - Execute install script
+#  shell: curl -s https://raw.githubusercontent.com/bissquit/zabbix/master/linux_iostat/install.sh | bash
+#  tags:
+#    - zbxa_iostat
+  
+- name: Iostat - Download install script
+  get_url:
+    url: https://raw.githubusercontent.com/bissquit/zabbix/master/linux_iostat/install.sh
+    dest: /tmp/install.sh
+    mode: 0744
+
+- name: Iostat - Run install script
+  command: /tmp/install.sh
