@@ -1,0 +1,7 @@
+---
+- name: Prometheus alertmanager installation
+  hosts: all
+  become: yes
+  become_method: su
+  roles:
+   - prometheus-alertmanager

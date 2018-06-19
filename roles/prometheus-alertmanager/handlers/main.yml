@@ -1,0 +1,6 @@
+---
+- name: Start alertmanager
+  service:
+    name: alertmanager
+    state: started
+    enabled: yes

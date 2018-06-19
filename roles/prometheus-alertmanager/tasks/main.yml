@@ -1,0 +1,60 @@
+---
+- name: Create alertmanager group
+  group:
+    name: alertmanager
+
+- name: Add alertmanager user
+  user:
+    name: alertmanager
+    shell: /bin/false
+    createhome: no
+    group: alertmanager
+
+- name: Create folders
+  file:
+    path: "{{ item }}"
+    state: directory
+    group: alertmanager
+    owner: alertmanager
+  with_items:
+    - '/etc/alertmanager'
+    - '/etc/alertmanager/data'
+
+- name: Download and unzip alertmanager
+  unarchive:
+    src: https://github.com/prometheus/alertmanager/releases/download/{{ alertmanager_version_number }}/{{ alertmanager_version }}.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: Copy binaries
+  copy:
+    src: "{{ tmp_folder }}/{{ alertmanager_version }}/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    remote_src: yes
+    owner: alertmanager
+    group: alertmanager
+    mode: 0744
+  with_items:
+    - 'alertmanager'
+    - 'amtool'
+
+- name: Copy main config
+  copy:
+    src: 'alertmanager.config'
+    dest: '/etc/alertmanager/alertmanager.yml'
+    owner: alertmanager
+    group: alertmanager
+
+- name: Copy service unit
+  copy:
+    src: 'alertmanager.service'
+    dest: '/etc/systemd/system/alertmanager.service'
+
+- name: Systemd reconfiguring
+  systemd:
+    name: alertmanager
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  notify:
+  - Start alertmanager

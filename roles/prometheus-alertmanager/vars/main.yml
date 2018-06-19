@@ -1,0 +1,4 @@
+---
+tmp_folder: /tmp
+alertmanager_version: 'alertmanager-0.15.0-rc.2.linux-amd64'
+alertmanager_version_number: 'v0.15.0-rc.2'

@@ -1,0 +1,7 @@
+---
+- name: Prometheus node_exporter installation
+  hosts: all
+  become: yes
+  become_method: su
+  roles:
+   - prometheus-node_exporter

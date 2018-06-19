@@ -1,0 +1,78 @@
+---
+- name: Create prometheus group
+  group:
+    name: prometheus
+
+- name: Add prometheus user
+  user:
+    name: prometheus
+    shell: /bin/false
+    createhome: no
+    group: prometheus
+
+- name: Create folders
+  file:
+    path: "{{ item }}"
+    state: directory
+    group: prometheus
+    owner: prometheus
+  with_items:
+    - '/etc/prometheus'
+    - '/etc/prometheus/rules'
+    - '/var/lib/prometheus'
+
+- name: Download and unzip prometheus
+  unarchive:
+    src: https://github.com/prometheus/prometheus/releases/download/{{ prometheus_version_number }}/{{ prometheus_version }}.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: Copy binaries
+  copy:
+    src: "{{ tmp_folder }}/{{ prometheus_version }}/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    remote_src: yes
+    owner: prometheus
+    group: prometheus
+    mode: 0744
+  with_items:
+    - 'prometheus'
+    - 'promtool'
+
+- name: Copy main config
+  copy:
+    src: 'prometheus.config'
+    dest: '/etc/prometheus/prometheus.yml'
+    owner: prometheus
+    group: prometheus
+
+- name: Copy service unit
+  copy:
+    src: 'prometheus.service'
+    dest: '/etc/systemd/system/prometheus.service'
+
+# 'copy' module does not support recursive copying with 'remote_src' flag
+# see https://docs.ansible.com/ansible/latest/modules/copy_module.html
+# because of this we need to use shell module instead
+#
+- name: Copy consoles
+  shell: cp -r "{{ tmp_folder }}/{{ prometheus_version }}/{{ item }}" /etc/prometheus
+  with_items:
+    - 'consoles'
+    - 'console_libraries'
+
+- name: Change files owner
+  file:
+    path: "/etc/prometheus"
+    owner: prometheus
+    group: prometheus
+    recurse: yes
+
+- name: Systemd reconfiguring
+  systemd:
+    name: prometheus
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  notify:
+  - Start prometheus

@@ -1,0 +1,9 @@
+---
+- name: Prometheus installation
+  hosts: all
+  become: yes
+  become_method: su
+  roles:
+   - prometheus-server
+   - prometheus-node_exporter
+   - prometheus-alertmanager

@@ -1,0 +1,40 @@
+---
+- name: Create node_exporter group
+  group:
+    name: node_exporter
+
+- name: Add node_exporter user
+  user:
+    name: node_exporter
+    shell: /bin/false
+    createhome: no
+    group: node_exporter
+
+- name: Download and unzip node_exporter
+  unarchive:
+    src: https://github.com/prometheus/node_exporter/releases/download/{{ node_exporter_version_number }}/{{ node_exporter_version }}.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: Copy binaries
+  copy:
+    src: "{{ tmp_folder }}/{{ node_exporter_version }}/node_exporter"
+    dest: "/usr/local/bin/node_exporter"
+    remote_src: yes
+    owner: node_exporter
+    group: node_exporter
+    mode: 0744
+
+- name: Copy service unit
+  copy:
+    src: 'node_exporter.service'
+    dest: '/etc/systemd/system/node_exporter.service'
+
+- name: Systemd reconfiguring
+  systemd:
+    name: node_exporter
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  notify:
+  - Start node_exporter

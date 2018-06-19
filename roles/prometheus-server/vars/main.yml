@@ -1,0 +1,4 @@
+---
+tmp_folder: /tmp
+prometheus_version: prometheus-2.3.0.linux-amd64
+prometheus_version_number: 'v2.3.0'
